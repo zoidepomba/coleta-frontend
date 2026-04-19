@@ -10,17 +10,24 @@ import {
 import { colors, spacing, radius } from '../theme';
 import { Button, Card, SectionLabel, BottomNav, FadeCard } from '../components';
 import { WASTE_TYPES } from '../data/mock';
+import { useAuth } from '../context/AuthContext';
 
 export default function HomeScreen({ navigation }) {
+  const { user } = useAuth();
+
   const handleNavigate = (key) => {
     if (key === 'history') navigation.navigate('Historico');
+    if (key === 'account') navigation.navigate('Conta');
   };
 
   return (
     <SafeAreaView style={styles.safe}>
       {/* Hero Header */}
       <View style={styles.hero}>
-        <Text style={styles.greeting}>Boa tarde, Carlos 👋</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('EscolherPerfil')} style={styles.backLink}>
+          <Text style={styles.backLinkText}>← Trocar perfil</Text>
+        </TouchableOpacity>
+        <Text style={styles.greeting}>Olá, {user?.name?.split(' ')[0]} 👋</Text>
         <Text style={styles.heroTitle}>Agendar coleta</Text>
         <View style={styles.addressPill}>
           <Text style={styles.addressText}>📍 Rua das Flores, 142 — Uberlândia</Text>
@@ -33,7 +40,7 @@ export default function HomeScreen({ navigation }) {
         {WASTE_TYPES.map((type, index) => (
           <FadeCard key={type.id} delay={index * 80}>
             <Card
-              onPress={type.available ? () => navigation.navigate('Prestadores', { wasteType: type }) : undefined}
+              onPress={type.available ? () => navigation.navigate('SolicitarColeta', { wasteType: type }) : undefined}
               style={[
                 styles.wasteCard,
                 type.available && styles.wasteCardActive,
@@ -77,6 +84,8 @@ const styles = StyleSheet.create({
     paddingTop: spacing.lg,
     paddingBottom: spacing.xl,
   },
+  backLink: { marginBottom: spacing.sm },
+  backLinkText: { fontSize: 13, color: 'rgba(255,255,255,0.75)', fontWeight: '600' },
   greeting: { fontSize: 14, color: 'rgba(255,255,255,0.85)', marginBottom: 4 },
   heroTitle: { fontSize: 26, fontWeight: '700', color: '#fff', marginBottom: spacing.md },
   addressPill: {
